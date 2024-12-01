@@ -1,4 +1,4 @@
-import SecretCard from './components/secret';
+import SecretCard from '../components/secret';
 
 export default function Home() {
   const secrets = [

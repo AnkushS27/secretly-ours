@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import SecretCard from '../components/secret';
+import SecretCard from '../../components/secret';
 
 const UnveilSecretPage: React.FC = () => {
   const [secret, setSecret] = useState('');
