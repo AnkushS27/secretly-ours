@@ -16,20 +16,16 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await signOut();
-      // toast.success("Logout success");
       router.replace('/');
     } catch (error: any) {
-      console.log('Logout failed: ', error);
-      // toast.error("Logout failed: " + error.message);
+      console.error('Logout failed:', error);
     }
   };
 
   useEffect(() => {
     if (session) {
-      console.log(session);
       setIsLoggedIn(true);
     } else {
-      console.log('No session');
       setIsLoggedIn(false);
     }
   }, [session]);

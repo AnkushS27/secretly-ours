@@ -1,25 +1,16 @@
-// import { Post } from "@/model/Post";
-
 export interface ApiResponse {
   success: boolean;
   message: string;
-  //   posts?: Array<Post>
+  data: SecretCardProps[]; // Array of secrets
 }
 
-export type TagsType = {
-  type: string; // Type of the tag, e.g., "location", "authority", etc.
-  value: string; // Value of the tag, e.g., "City Name", "Police Department", etc.
-};
-
-// export type PostUserType = {
-//     userName: string; // Name of the user
-//     userRole: string; // Role of the user
-//     userProfilePic: string; // URL of the user's profile picture
-// }
-
-// export type PostType = {
-//     content: string; // Content of the post
-//     images: string[]; // Array of image URLs
-//     tags: TagsType[]; // Array of tags
-//     userInfo: PostUserType; // User information
-// }
+export interface SecretCardProps {
+  _id?: string; // Secret ID (optional, used for edit and delete)
+  role?: string; // User role (optional, used for button visibility)
+  onEdit?: () => void; // Function to handle edit action
+  onDelete?: () => void; // Function to handle delete action
+  content: string; // Secret content
+  user: {
+    username: string; // Username of the user who posted the secret
+  };
+}

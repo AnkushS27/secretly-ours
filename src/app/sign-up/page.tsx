@@ -2,7 +2,6 @@
 
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
 import { ApiResponse } from '@/types/ApiResponse';
@@ -16,7 +15,6 @@ const SignupPage = () => {
   });
 
   const router = useRouter();
-  const { data: session } = useSession();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -31,9 +29,7 @@ const SignupPage = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log('Form data:', formData);
       const response = await axios.post<ApiResponse>('/api/sign-up', formData);
-      console.log('Sign-up response:', response.data);
 
       router.replace('/sign-in');
     } catch (error) {

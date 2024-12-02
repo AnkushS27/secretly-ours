@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/model/User';
 
-export async function POST(request: Request) {
+export default async function POST(request: Request) {
   await dbConnect();
   try {
     const { username, email, password, role } = await request.json();
@@ -34,7 +34,6 @@ export async function POST(request: Request) {
     });
 
     const savedUser = await newUser.save();
-    console.log('User saved: ', savedUser);
 
     return Response.json(
       {

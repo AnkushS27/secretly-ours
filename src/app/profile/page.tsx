@@ -22,7 +22,6 @@ const ProfilePage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle profile update logic here
-    console.log('Profile updated:', profileData);
   };
 
   return (
