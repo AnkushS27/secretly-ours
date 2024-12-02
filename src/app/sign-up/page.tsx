@@ -1,14 +1,22 @@
 'use client';
 
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
+
+import { ApiResponse } from '@/types/ApiResponse';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
-    role: 'user',
+    role: '',
   });
+
+  const router = useRouter();
+  const { data: session } = useSession();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -20,10 +28,17 @@ const SignupPage = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Form submitted:', formData);
+    try {
+      console.log('Form data:', formData);
+      const response = await axios.post<ApiResponse>('/api/sign-up', formData);
+      console.log('Sign-up response:', response.data);
+
+      router.replace('/sign-in');
+    } catch (error) {
+      console.error('Error during sign-up:', error);
+    }
   };
 
   return (
@@ -31,7 +46,7 @@ const SignupPage = () => {
       <div className='w-full max-w-md rounded-lg bg-white p-8 shadow-md'>
         <h2 className='mb-6 text-center text-2xl font-bold'>Signup</h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           <div className='mb-4'>
             <label
               className='mb-2 block text-sm font-bold text-gray-700'
