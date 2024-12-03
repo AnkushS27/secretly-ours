@@ -1,5 +1,6 @@
 import './globals.css';
 
+import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Toaster } from 'react-hot-toast';
@@ -32,6 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
+      <Analytics />
       <AuthProvider>
         <body
           className={`${geistSans.variable} ${geistMono.variable} flex min-h-[90vh] flex-col justify-between font-[family-name:var(--font-geist-sans)] antialiased`}
