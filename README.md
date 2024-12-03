@@ -80,6 +80,8 @@ Secretly Ours is an anonymous secret-sharing platform where users can securely s
 The platform is deployed on Vercel.
 Access it here: https://secretly-ours.vercel.app/
 
+**Note: If '/unveil-secret' route not working even after logging in. Try to write the url in the browser url itself.**
+
 ---
 
 ## **Testing 🧪**
