@@ -40,15 +40,18 @@ const Navbar = () => {
   }, [session]);
 
   return (
-    <nav className='flex items-center justify-between bg-gray-800 p-4 text-white'>
+    <nav className='flex items-center justify-between gap-10 bg-gray-800 p-4 text-white'>
       <Link href='/' className='text-2xl font-bold'>
         secretlyOurs
       </Link>
 
-      <div className='space-x-4'>
-        <Link href='/unveil-secret' className='hover:text-gray-400'>
+      <div className='flex gap-6'>
+        <div
+          onClick={() => router.push('/unveil-secret')}
+          className='cursor-pointer hover:text-gray-400'
+        >
           Unveil Secret
-        </Link>
+        </div>
 
         {/* Show Dashboard link only if the user is logged in and is an admin */}
         {isLoggedIn && isAdmin && (

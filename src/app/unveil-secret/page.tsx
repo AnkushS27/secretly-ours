@@ -62,8 +62,6 @@ const UnveilSecretPage: React.FC = () => {
       if (response.status === 200) {
         const userSecrets = response.data as any;
 
-        console.log(userSecrets);
-
         // Handle the case where there are no secrets
         if (!userSecrets || userSecrets.length === 0) {
           setSecrets([]); // Set empty array when no secrets are returned
@@ -158,7 +156,7 @@ const UnveilSecretPage: React.FC = () => {
                 key={secretItem._id}
                 content={secretItem.content}
                 user={secretItem.user}
-                role={session?.user.role}
+                role='admin'
                 onEdit={() => secretItem._id && handleEdit(secretItem._id)} // Handle edit
                 onDelete={() => secretItem._id && handleDelete(secretItem._id)} // Handle delete
               />
