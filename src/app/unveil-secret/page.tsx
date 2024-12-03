@@ -2,6 +2,7 @@
 
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react'; // Import useSession hook from next-auth
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast'; // Import toast and Toaster
 
@@ -9,6 +10,8 @@ import SecretCard from '@/components/secret'; // Import SecretCard component for
 import { ApiResponse, SecretCardProps } from '@/types/ApiResponse';
 
 const UnveilSecretPage: React.FC = () => {
+  const { data: session } = useSession();
+
   const [secret, setSecret] = useState('');
   const [secrets, setSecrets] = useState<SecretCardProps[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,36 +55,65 @@ const UnveilSecretPage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<ApiResponse>(
-          '/api/secret/user-secrets'
-        );
+  // Fetch user's secrets
+  const fetchSecrets = async () => {
+    try {
+      const response = await axios.get<ApiResponse>('/api/secret/user-secrets');
+      if (response.status === 200) {
+        const userSecrets = response.data as any;
 
-        if (response.status === 200) {
-          const userSecrets = response.data as any;
+        console.log(userSecrets);
 
-          // Handle the case where there are no secrets
-          if (!userSecrets || userSecrets.length === 0) {
-            setSecrets([]); // Set empty array when no secrets are returned
-          } else {
-            setSecrets(userSecrets as any);
-          }
+        // Handle the case where there are no secrets
+        if (!userSecrets || userSecrets.length === 0) {
+          setSecrets([]); // Set empty array when no secrets are returned
         } else {
-          throw new Error('Failed to fetch secrets');
+          setSecrets(userSecrets as any);
         }
-      } catch (error: any) {
-        setError('An error occurred while fetching secrets');
-        toast.error('An error occurred while fetching secrets'); // Error toast
+      } else {
+        throw new Error('Failed to fetch secrets');
       }
-    };
+    } catch (error: any) {
+      setError('An error occurred while fetching secrets');
+      toast.error('An error occurred while fetching secrets'); // Error toast
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchSecrets();
   }, []);
 
+  // Handle editing a secret
+  const handleEdit = (secretId: string) => {
+    const secretToEdit = secrets.find((secret) => secret._id === secretId);
+    if (secretToEdit) {
+      window.location.href = `/secret/${secretId}`; // Redirect to edit page
+      toast.loading('Redirecting to edit secret'); // Info toast
+    }
+  };
+
+  // Handle deleting a secret
+  const handleDelete = async (secretId: string) => {
+    try {
+      const response = await axios.delete('/api/secret/delete', {
+        data: { secretId },
+      });
+
+      if (response.status === 200) {
+        setSecrets((prevSecrets) =>
+          prevSecrets.filter((secret) => secret._id !== secretId)
+        );
+        toast.success('Secret deleted successfully');
+      } else {
+        toast.error('Failed to delete secret');
+      }
+    } catch (error) {
+      toast.error('Failed to delete secret');
+    }
+  };
+
   return (
-    <div className='flex min-h-screen w-full flex-col items-center justify-center gap-12 bg-gray-100 p-10 text-black'>
+    <div className='flex min-h-[90vh] w-full flex-col items-center justify-center gap-12 bg-gray-100 p-10 text-black'>
       <div className='w-full max-w-md rounded-lg bg-white p-8 shadow-md'>
         <h2 className='mb-6 text-center text-2xl font-bold'>Unveil Secret</h2>
 
@@ -126,6 +158,9 @@ const UnveilSecretPage: React.FC = () => {
                 key={secretItem._id}
                 content={secretItem.content}
                 user={secretItem.user}
+                role={session?.user.role}
+                onEdit={() => secretItem._id && handleEdit(secretItem._id)} // Handle edit
+                onDelete={() => secretItem._id && handleDelete(secretItem._id)} // Handle delete
               />
             ))}
           </div>

@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast'; // Import toast and Toaster
 
+import Loading from '@/components/loading';
 import { SecretCardProps } from '@/types/ApiResponse';
 
 import SecretCard from '../components/secret'; // Import SecretCard component for display
@@ -12,7 +13,6 @@ import SecretCard from '../components/secret'; // Import SecretCard component fo
 const Home = () => {
   const [secrets, setSecrets] = useState<SecretCardProps[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [role, setRole] = useState('');
   const [username, setUserName] = useState<string | null>(null);
 
@@ -24,12 +24,14 @@ const Home = () => {
       const response = await axios.get('/api/secret/getAll'); // API endpoint to get all secrets
       if (response.status === 200) {
         setSecrets(response.data);
-      } else {
-        setError('Failed to load secrets');
       }
-    } catch (err) {
-      setError('An error occurred while fetching secrets');
-      toast.error('An error occurred while fetching secrets'); // Error toast
+    } catch (err: any) {
+      // Check if the error is a 404 due to no secrets found
+      if (err.response?.status === 404) {
+        return;
+      } else {
+        toast.error('An error occurred while fetching secrets. Error: ' + err); // Error toast
+      }
     } finally {
       setLoading(false);
     }
@@ -99,13 +101,14 @@ const Home = () => {
     }
   };
 
-  if (loading) return <p>Loading secrets...</p>;
+  if (loading) return <Loading text='secrets' />;
 
   return (
-    <main className='flex min-h-screen flex-col justify-between font-[family-name:var(--font-geist-sans)]'>
+    <main className='flex min-h-[90vh] flex-col justify-between font-[family-name:var(--font-geist-sans)]'>
       <div className='flex flex-wrap justify-center'>
-        {error ? (
-          <p className='text-red-500'>{error}</p>
+        {secrets.length === 0 ? (
+          // Show message when there are no secrets
+          <p className='text-gray-500'>No secrets to display.</p>
         ) : (
           secrets.map((secret) => (
             <SecretCard

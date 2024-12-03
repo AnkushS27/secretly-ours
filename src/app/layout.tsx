@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang='en'>
       <AuthProvider>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col justify-between font-[family-name:var(--font-geist-sans)] antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} flex min-h-[90vh] flex-col justify-between font-[family-name:var(--font-geist-sans)] antialiased`}
         >
           <Navbar />
           <Toaster position='bottom-right' />
