@@ -17,11 +17,17 @@ export const config = {
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
 
+  console.log('Middleware triggered');
+  console.log('Current path:', url.pathname);
+
   // Get the token (JWT) for the request
   const token = await getToken({
     req: request,
     secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secureCookie: process.env.NODE_ENV === 'production',
   });
+
+  console.log('Token:', token);
 
   // Handle authenticated users trying to access login or signup pages
   if (token) {
@@ -50,6 +56,8 @@ export async function middleware(request: NextRequest) {
       url.pathname.startsWith('/profile') ||
       url.pathname.startsWith('/dashboard')
     ) {
+      console.log('Redirecting unauthenticated user');
+      console.log('Redirect URL:', new URL('/sign-in', request.url).toString());
       // Redirect unauthenticated users to the sign-in page
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
