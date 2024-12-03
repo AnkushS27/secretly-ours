@@ -1,10 +1,9 @@
-// pages/secret/edit/[id].tsx
 'use client';
 
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast'; // Import toast for notifications
 
 const EditSecretPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [secretContent, setSecretContent] = useState('');
@@ -18,15 +17,16 @@ const EditSecretPage = ({ params }: { params: Promise<{ id: string }> }) => {
     if (id) {
       const fetchSecret = async () => {
         try {
-          const secretId = id[0];
           const response = await axios.get(`/api/secret/getOne?id=${id}`);
           if (response.status === 200) {
             setSecretContent(response.data.content); // Pre-fill with current content
           } else {
             setError('Secret not found');
+            toast.error('Secret not found');
           }
         } catch (err) {
           setError('Error fetching secret');
+          toast.error('Error fetching secret');
         }
       };
 
@@ -43,11 +43,12 @@ const EditSecretPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
     if (!secretContent) {
       setError('Secret content cannot be empty');
+      toast.error('Secret content cannot be empty');
       return;
     }
 
     setIsSubmitting(true);
-    setError('');
+    setError(''); // Clear previous errors
 
     try {
       const response = await axios.put('/api/secret/edit', {
@@ -56,12 +57,15 @@ const EditSecretPage = ({ params }: { params: Promise<{ id: string }> }) => {
       });
 
       if (response.status === 200) {
+        toast.success('Secret updated successfully!');
         router.push('/'); // Redirect after successful update
       } else {
         setError('Failed to update secret');
+        toast.error('Failed to update secret');
       }
     } catch (err) {
       setError('An error occurred while updating the secret');
+      toast.error('An error occurred while updating the secret');
     } finally {
       setIsSubmitting(false);
     }

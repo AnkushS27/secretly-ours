@@ -3,6 +3,7 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast'; // Import toast for notifications
 
 import { ApiResponse } from '@/types/ApiResponse';
 
@@ -11,7 +12,7 @@ const SignupPage = () => {
     username: '',
     email: '',
     password: '',
-    role: '',
+    role: 'user',
   });
 
   const router = useRouter();
@@ -28,17 +29,23 @@ const SignupPage = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const response = await axios.post<ApiResponse>('/api/sign-up', formData);
 
+      // Show success toast
+      toast.success('Signup successful! Redirecting to sign-in page...');
+
+      // Redirect to sign-in page after successful signup
       router.replace('/sign-in');
-    } catch (error) {
-      console.error('Error during sign-up:', error);
+    } catch (error: any) {
+      // Show error toast if signup fails
+      toast.error(error.message || 'Error during sign-up');
     }
   };
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-100'>
+    <div className='flex min-h-screen items-center justify-center bg-gray-100 text-black'>
       <div className='w-full max-w-md rounded-lg bg-white p-8 shadow-md'>
         <h2 className='mb-6 text-center text-2xl font-bold'>Signup</h2>
 

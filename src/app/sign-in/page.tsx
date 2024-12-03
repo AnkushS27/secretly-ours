@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast'; // Import toast for notifications
 
 const SigninPage = () => {
   const router = useRouter();
@@ -29,13 +30,18 @@ const SigninPage = () => {
       password: formData.password,
     });
 
-    if (result) {
+    if (result?.error) {
+      // Show error toast if sign-in fails
+      toast.error(result.error);
+    } else if (result?.ok) {
+      // Show success toast if sign-in is successful
+      toast.success('Signin successful! Redirecting...');
       router.push('/');
     }
   };
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-100'>
+    <div className='flex min-h-screen items-center justify-center bg-gray-100 text-black'>
       <div className='w-full max-w-md rounded-lg bg-white p-8 shadow-md'>
         <h2 className='mb-6 text-center text-2xl font-bold'>Signin</h2>
         <form onSubmit={handleSubmit}>

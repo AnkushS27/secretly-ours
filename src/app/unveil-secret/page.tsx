@@ -3,6 +3,7 @@
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast'; // Import toast and Toaster
 
 import SecretCard from '@/components/secret'; // Import SecretCard component for display
 import { ApiResponse, SecretCardProps } from '@/types/ApiResponse';
@@ -24,6 +25,7 @@ const UnveilSecretPage: React.FC = () => {
 
     if (!secret) {
       setError('Secret cannot be empty');
+      toast.error('Secret cannot be empty'); // Error toast
       return;
     }
 
@@ -40,12 +42,11 @@ const UnveilSecretPage: React.FC = () => {
         throw new Error('Failed to unveil secret');
       }
 
-      const newSecret = response.data;
-
-      // Optionally, you can navigate to another page after unveiling the secret
+      toast.success('Secret unveiled successfully'); // Success toast
       router.replace('/'); // Adjust the route as needed
     } catch (error: any) {
       setError(error.message || 'An error occurred');
+      toast.error(error.message || 'An error occurred'); // Error toast
     } finally {
       setIsSubmitting(false);
     }
@@ -58,15 +59,21 @@ const UnveilSecretPage: React.FC = () => {
           '/api/secret/user-secrets'
         );
 
-        if (response.status !== 200) {
+        if (response.status === 200) {
+          const userSecrets = response.data as any;
+
+          // Handle the case where there are no secrets
+          if (!userSecrets || userSecrets.length === 0) {
+            setSecrets([]); // Set empty array when no secrets are returned
+          } else {
+            setSecrets(userSecrets as any);
+          }
+        } else {
           throw new Error('Failed to fetch secrets');
         }
-
-        const userSecrets = response.data;
-
-        setSecrets(userSecrets as any);
       } catch (error: any) {
-        console.error('Error fetching secrets:', error);
+        setError('An error occurred while fetching secrets');
+        toast.error('An error occurred while fetching secrets'); // Error toast
       }
     };
 

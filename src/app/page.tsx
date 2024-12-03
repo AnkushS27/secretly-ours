@@ -3,6 +3,7 @@
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast'; // Import toast and Toaster
 
 import { SecretCardProps } from '@/types/ApiResponse';
 
@@ -13,6 +14,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [role, setRole] = useState('');
+  const [username, setUserName] = useState<string | null>(null);
 
   const { data: session } = useSession();
 
@@ -27,7 +29,7 @@ const Home = () => {
       }
     } catch (err) {
       setError('An error occurred while fetching secrets');
-      console.error(err);
+      toast.error('An error occurred while fetching secrets'); // Error toast
     } finally {
       setLoading(false);
     }
@@ -36,12 +38,12 @@ const Home = () => {
   // Fetch role (e.g., from context or API)
   const fetchRole = async () => {
     try {
-      // Fetch user role (context)
       if (session) {
         setRole(session.user.role);
+        setUserName(session.user.username); // Save user ID for authorization checks
       }
     } catch (err) {
-      console.error('Failed to fetch user role:', err);
+      toast.error('Failed to fetch user role'); // Error toast in case of failure
     }
   };
 
@@ -52,28 +54,48 @@ const Home = () => {
 
   // Handle editing a secret
   const handleEdit = (secretId: string) => {
-    // Redirect to edit page with secretId and content
     const secretToEdit = secrets.find((secret) => secret._id === secretId);
     if (secretToEdit) {
-      window.location.href = `/secret/${secretId}`;
+      // Ensure the current user is the owner of the secret
+      if (
+        role === 'admin' ||
+        role === 'moderator' ||
+        secretToEdit.user.username === username
+      ) {
+        window.location.href = `/secret/${secretId}`; // Redirect to edit page
+        toast.loading('Redirecting to edit secret'); // Info toast
+      } else {
+        toast.error('You are not authorized to edit this secret'); // Error toast
+      }
     }
-    // Implement edit functionality (e.g., show a modal or navigate to an edit page)
   };
 
   // Handle deleting a secret
   const handleDelete = async (secretId: string) => {
-    try {
-      const response = await axios.delete(`/api/secret/delete`, {
-        data: { secretId },
-      });
-      if (response.status === 200) {
-        // Remove deleted secret from state
-        setSecrets(secrets.filter((secret: any) => secret._id !== secretId));
+    const secretToDelete = secrets.find((secret) => secret._id === secretId);
+    if (secretToDelete) {
+      // Ensure the current user is the owner of the secret
+      if (
+        role === 'admin' ||
+        role === 'moderator' ||
+        secretToDelete.user.username === username
+      ) {
+        try {
+          const response = await axios.delete(`/api/secret/delete`, {
+            data: { secretId },
+          });
+          if (response.status === 200) {
+            setSecrets(secrets.filter((secret) => secret._id !== secretId));
+            toast.success('Secret deleted successfully'); // Success toast
+          } else {
+            toast.error('Failed to delete secret'); // Error toast
+          }
+        } catch (err) {
+          toast.error('An error occurred while deleting secret'); // Error toast
+        }
       } else {
-        console.error('Failed to delete secret');
+        toast.error('You are not authorized to delete this secret'); // Error toast
       }
-    } catch (err) {
-      console.error('An error occurred while deleting secret:', err);
     }
   };
 
@@ -85,15 +107,15 @@ const Home = () => {
         {error ? (
           <p className='text-red-500'>{error}</p>
         ) : (
-          secrets.map((secret: any) => (
+          secrets.map((secret) => (
             <SecretCard
               key={secret._id}
-              _id={secret._id} // Secret ID
+              _id={secret._id}
               content={secret.content}
-              user={secret.user} // User who posted the secret
-              role={role} // User's role (user, moderator, admin)
-              onEdit={() => handleEdit(secret._id)} // Handle edit
-              onDelete={() => handleDelete(secret._id)} // Handle delete
+              user={secret.user}
+              role={role}
+              onEdit={() => secret._id && handleEdit(secret._id)} // Handle edit
+              onDelete={() => secret._id && handleDelete(secret._id)} // Handle delete
             />
           ))
         )}

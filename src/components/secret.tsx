@@ -6,7 +6,6 @@ const SecretCard = ({
   role,
   onEdit,
   onDelete,
-  _id,
 }: SecretCardProps) => {
   return (
     <div className='m-4 min-w-60 max-w-sm rounded bg-white p-4 shadow-lg'>

@@ -2,6 +2,7 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { Toaster } from 'react-hot-toast';
 
 import AuthProvider from '@/context/AuthProvider';
 
@@ -36,6 +37,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col justify-between font-[family-name:var(--font-geist-sans)] antialiased`}
         >
           <Navbar />
+          <Toaster position='bottom-right' />
           {children}
           <Footer />
         </body>

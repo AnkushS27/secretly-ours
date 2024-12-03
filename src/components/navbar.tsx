@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast'; // Import toast for notifications
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -17,8 +18,9 @@ const Navbar = () => {
     try {
       await signOut();
       router.replace('/');
+      toast.success('Successfully logged out'); // Success toast on successful logout
     } catch (error: any) {
-      console.error('Logout failed:', error);
+      toast.error('Logout failed. Please try again'); // Error toast on logout failure
     }
   };
 
