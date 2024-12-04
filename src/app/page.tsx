@@ -27,9 +27,7 @@ const Home = () => {
       }
     } catch (err: any) {
       // Check if the error is a 404 due to no secrets found
-      if (err.response?.status === 404) {
-        return;
-      } else {
+      if (err.response?.status !== 404) {
         toast.error('An error occurred while fetching secrets. Error: ' + err); // Error toast
       }
     } finally {
