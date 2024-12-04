@@ -27,7 +27,7 @@ export interface SecretCardProps {
   onEdit?: () => void; // Function to handle edit action
   onDelete?: () => void; // Function to handle delete action
   content: string; // Secret content
-  user: {
+  user?: {
     username: string; // Username of the user who posted the secret
   };
 }

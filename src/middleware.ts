@@ -17,17 +17,12 @@ export const config = {
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
 
-  console.log('Middleware triggered');
-  console.log('Current path:', url.pathname);
-
   // Get the token (JWT) for the request
   const token = await getToken({
     req: request,
     secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
     secureCookie: process.env.NODE_ENV === 'production',
   });
-
-  console.log('Token:', token);
 
   // Handle authenticated users trying to access login or signup pages
   if (token) {

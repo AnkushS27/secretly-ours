@@ -13,7 +13,7 @@ import SecretCard from '../components/secret'; // Import SecretCard component fo
 const Home = () => {
   const [secrets, setSecrets] = useState<SecretCardProps[]>([]);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState('user');
   const [username, setUserName] = useState<string | null>(null);
 
   const { data: session } = useSession();
@@ -57,7 +57,7 @@ const Home = () => {
   // Handle editing a secret
   const handleEdit = (secretId: string) => {
     const secretToEdit = secrets.find((secret) => secret._id === secretId);
-    if (secretToEdit) {
+    if (secretToEdit && secretToEdit.user) {
       // Ensure the current user is the owner of the secret
       if (
         role === 'admin' ||
@@ -75,7 +75,7 @@ const Home = () => {
   // Handle deleting a secret
   const handleDelete = async (secretId: string) => {
     const secretToDelete = secrets.find((secret) => secret._id === secretId);
-    if (secretToDelete) {
+    if (secretToDelete && secretToDelete.user) {
       // Ensure the current user is the owner of the secret
       if (
         role === 'admin' ||
